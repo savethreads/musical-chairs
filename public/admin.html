@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🎵 Musical Chairs — Admin</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg: #0a0a14;
+            --card: #12121f;
+            --card2: #161628;
+            --border: #222240;
+            --accent: #7c3aed;
+            --accent2: #ec4899;
+            --gold: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+            --blue: #3b82f6;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+        }
+
+        /* ── LOGIN ── */
+        #loginWrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .login-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 48px 40px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 0 60px rgba(0, 0, 0, .5);
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 8px;
+        }
+
+        .title {
+            font-size: 1.6rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 4px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: .88rem;
+            margin-bottom: 32px;
+        }
+
+        input[type="password"] {
+            width: 100%;
+            padding: 13px 16px;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            border-radius: 11px;
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            font-size: .95rem;
+            outline: none;
+            margin-bottom: 14px;
+            transition: border-color .2s;
+        }
+
+        input[type="password"]:focus {
+            border-color: var(--accent);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 13px 28px;
+            border: none;
+            border-radius: 11px;
+            font-family: 'Poppins', sans-serif;
+            font-size: .95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            width: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, .4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(124, 58, 237, .6);
+        }
+
+        .btn-primary:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-green {
+            background: linear-gradient(135deg, var(--green), #059669);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, .3);
+        }
+
+        .btn-green:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-green:disabled {
+            opacity: .4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-red {
+            background: linear-gradient(135deg, var(--red), #b91c1c);
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(239, 68, 68, .3);
+        }
+
+        .btn-red:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-blue {
+            background: linear-gradient(135deg, var(--blue), #1d4ed8);
+            color: #fff;
+        }
+
+        .btn-blue:hover {
+            transform: translateY(-2px);
+        }
+
+        .error-msg {
+            color: var(--red);
+            font-size: .83rem;
+            margin-top: -6px;
+            margin-bottom: 10px;
+        }
+
+        /* ── DASHBOARD ── */
+        #dashboard {
+            display: none;
+        }
+
+        .topbar {
+            background: var(--card);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .topbar-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .topbar-phase {
+            padding: 5px 14px;
+            border-radius: 50px;
+            font-size: .78rem;
+            font-weight: 600;
+            background: rgba(124, 58, 237, .2);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .topbar-phase.playing {
+            background: rgba(16, 185, 129, .2);
+            border-color: var(--green);
+            color: var(--green);
+        }
+
+        .topbar-phase.stopped {
+            background: rgba(239, 68, 68, .2);
+            border-color: var(--red);
+            color: var(--red);
+        }
+
+        .topbar-phase.ended {
+            background: rgba(245, 158, 11, .2);
+            border-color: var(--gold);
+            color: var(--gold);
+        }
+
+        .content {
+            padding: 28px 32px;
+        }
+
+        /* ── STAT CARDS ── */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .stat-card {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px 20px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.8rem;
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 6px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: .82rem;
+        }
+
+        .stat-card.s1 .stat-value {
+            color: var(--blue);
+        }
+
+        .stat-card.s2 .stat-value {
+            color: var(--green);
+        }
+
+        .stat-card.s3 .stat-value {
+            color: var(--red);
+        }
+
+        .stat-card.s4 .stat-value {
+            color: var(--accent2);
+        }
+
+        /* ── CONTROLS ── */
+        .controls {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 28px;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .controls-label {
+            font-size: .85rem;
+            color: var(--muted);
+            margin-right: auto;
+            font-weight: 600;
+        }
+
+        .controls .btn {
+            width: auto;
+            padding: 11px 24px;
+        }
+
+        /* ── WINNER BANNER ── */
+        #winnerBanner {
+            display: none;
+            background: linear-gradient(135deg, rgba(245, 158, 11, .15), rgba(217, 119, 6, .1));
+            border: 1px solid var(--gold);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 28px;
+            text-align: center;
+        }
+
+        #winnerBanner.visible {
+            display: block;
+        }
+
+        #winnerBanner .trophy {
+            font-size: 2.5rem;
+        }
+
+        #winnerBanner h2 {
+            color: var(--gold);
+            font-size: 1.5rem;
+            margin: 8px 0 4px;
+        }
+
+        #winnerBanner p {
+            color: var(--muted);
+        }
+
+        #winnerBannerName {
+            color: var(--gold);
+            font-size: 1.8rem;
+            font-weight: 900;
+        }
+
+        /* ── PLAYER LIST ── */
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .search-input {
+            padding: 8px 14px;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            font-size: .85rem;
+            outline: none;
+            width: 220px;
+        }
+
+        .search-input:focus {
+            border-color: var(--accent);
+        }
+
+        .players-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            max-height: 420px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .players-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .players-grid::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .players-grid::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 4px;
+        }
+
+        .player-chip {
+            background: var(--card2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: .85rem;
+            transition: border-color .2s;
+        }
+
+        .player-chip.active {
+            border-color: rgba(16, 185, 129, .4);
+        }
+
+        .player-chip.disqualified {
+            border-color: rgba(239, 68, 68, .3);
+        }
+
+        .player-chip.eliminated {
+            border-color: rgba(148, 163, 184, .2);
+        }
+
+        .player-chip.winner {
+            border-color: var(--gold);
+            background: rgba(245, 158, 11, .08);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .dot-active {
+            background: var(--green);
+            box-shadow: 0 0 6px var(--green);
+        }
+
+        .dot-disqualified {
+            background: var(--red);
+        }
+
+        .dot-eliminated {
+            background: var(--muted);
+        }
+
+        .dot-winner {
+            background: var(--gold);
+            box-shadow: 0 0 6px var(--gold);
+        }
+
+        .chip-name {
+            flex: 1;
+            min-width: 0;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .chip-badge {
+            font-size: .68rem;
+            padding: 2px 8px;
+            border-radius: 50px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .badge-active {
+            background: rgba(16, 185, 129, .2);
+            color: var(--green);
+        }
+
+        .badge-disqualified {
+            background: rgba(239, 68, 68, .2);
+            color: var(--red);
+        }
+
+        .badge-eliminated {
+            background: rgba(148, 163, 184, .15);
+            color: var(--muted);
+        }
+
+        .badge-winner {
+            background: rgba(245, 158, 11, .2);
+            color: var(--gold);
+        }
+
+        /* round info */
+        .round-info {
+            background: rgba(124, 58, 237, .1);
+            border: 1px solid rgba(124, 58, 237, .3);
+            border-radius: 10px;
+            padding: 10px 18px;
+            font-size: .85rem;
+            color: var(--accent);
+            font-weight: 600;
+            display: none;
+        }
+
+        .round-info.visible {
+            display: block;
+        }
+
+        @media (max-width:600px) {
+            .topbar {
+                padding: 14px 16px;
+            }
+
+            .content {
+                padding: 18px 16px;
+            }
+
+            .controls {
+                flex-direction: column;
+            }
+
+            .controls .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ── ADMIN LOGIN ──────────────────────────────────── -->
+    <div id="loginWrap">
+        <div class="login-card">
+            <div class="logo">🎛️</div>
+            <h1 class="title">Admin Dashboard</h1>
+            <p class="subtitle">Musical Chairs Game Control</p>
+            <input type="password" id="pwdInput" placeholder="Admin Password" />
+            <p class="error-msg" id="loginErr"></p>
+            <button class="btn btn-primary" onclick="adminLogin()">🔐 Login as Admin</button>
+        </div>
+    </div>
+
+    <!-- ── DASHBOARD ──────────────────────────────────────── -->
+    <div id="dashboard">
+
+        <!-- Top Bar -->
+        <div class="topbar">
+            <div class="topbar-title">🎵 Musical Chairs — Admin</div>
+            <div style="display:flex;align-items:center;gap:16px;">
+                <span id="phaseLabel" class="topbar-phase">Waiting</span>
+                <span id="roundLabel" style="color:var(--muted);font-size:.8rem;"></span>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <!-- Stats -->
+            <div class="stats-grid">
+                <div class="stat-card s1">
+                    <div class="stat-value" id="statLoggedIn">0</div>
+                    <div class="stat-label">Logged In</div>
+                </div>
+                <div class="stat-card s2">
+                    <div class="stat-value" id="statActive">0</div>
+                    <div class="stat-label">Active Players</div>
+                </div>
+                <div class="stat-card s3">
+                    <div class="stat-value" id="statEliminated">0</div>
+                    <div class="stat-label">Eliminated</div>
+                </div>
+                <div class="stat-card s4">
+                    <div class="stat-value" id="statDisq">0</div>
+                    <div class="stat-label">Disqualified</div>
+                </div>
+            </div>
+
+            <!-- Round info -->
+            <div class="round-info" id="roundInfo"></div>
+            <div style="height:16px"></div>
+
+            <!-- Winner Banner -->
+            <div id="winnerBanner">
+                <div class="trophy">🏆</div>
+                <h2>We Have a Winner!</h2>
+                <div id="winnerBannerName"></div>
+                <p style="margin-top:8px;">Congratulations to our champion!</p>
+            </div>
+
+            <!-- Controls -->
+            <div class="controls">
+                <span class="controls-label">Game Controls</span>
+                <button class="btn btn-green" id="startBtn" onclick="startGame()">▶ Start Game</button>
+                <button class="btn btn-red" id="resetBtn" onclick="resetGame()">↺ Reset Game</button>
+            </div>
+
+            <!-- Player List -->
+            <div class="section-header">
+                <div class="section-title">Players (<span id="totalCount">0</span>)</div>
+                <input class="search-input" type="text" id="searchInput" placeholder="Search player…"
+                    oninput="renderPlayers()" />
+            </div>
+            <div class="players-grid" id="playerGrid"></div>
+
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        let allPlayers = [];
+        let isAdmin = false;
+
+        // ── LOGIN ─────────────────────────────────────────────────────────────
+        document.getElementById('pwdInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') adminLogin();
+        });
+
+        function adminLogin() {
+            const pwd = document.getElementById('pwdInput').value;
+            socket.emit('admin:login', { password: pwd }, (res) => {
+                if (res && res.success) {
+                    isAdmin = true;
+                    document.getElementById('loginWrap').style.display = 'none';
+                    document.getElementById('dashboard').style.display = 'block';
+                } else {
+                    document.getElementById('loginErr').textContent = 'Wrong password. Try again.';
+                }
+            });
+        }
+
+        socket.on('admin:loginResult', (res) => {
+            if (res.success) {
+                isAdmin = true;
+                document.getElementById('loginWrap').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+            } else {
+                document.getElementById('loginErr').textContent = res.message || 'Wrong password.';
+            }
+        });
+
+        socket.on('admin:error', ({ message }) => {
+            alert('⚠️ ' + message);
+        });
+
+        // ── ADMIN UPDATE ──────────────────────────────────────────────────────
+        socket.on('admin:update', (data) => {
+            updateDashboard(data);
+        });
+
+        function updateDashboard({ stats, players, phase, roundNumber, winner }) {
+            // Stats
+            document.getElementById('statLoggedIn').textContent = stats.loggedIn;
+            document.getElementById('statActive').textContent = stats.activePlayers;
+            document.getElementById('statEliminated').textContent = stats.eliminated;
+            document.getElementById('statDisq').textContent = stats.disqualified;
+            document.getElementById('totalCount').textContent = players.length;
+
+            // Phase badge
+            const phaseEl = document.getElementById('phaseLabel');
+            const phaseMap = {
+                waiting: { text: '⏳ Waiting', cls: '' },
+                music_playing: { text: '🎶 Music Playing', cls: 'playing' },
+                music_stopped: { text: '🛑 Music Stopped', cls: 'stopped' },
+                ended: { text: '🏁 Game Ended', cls: 'ended' },
+            };
+            const ph = phaseMap[phase] || { text: phase, cls: '' };
+            phaseEl.textContent = ph.text;
+            phaseEl.className = 'topbar-phase ' + ph.cls;
+
+            // Round
+            const roundLabel = document.getElementById('roundLabel');
+            if (roundNumber > 0) {
+                roundLabel.textContent = `Round ${roundNumber}`;
+            } else {
+                roundLabel.textContent = '';
+            }
+
+            // Round info strip
+            const roundInfo = document.getElementById('roundInfo');
+            if (phase === 'music_playing' || phase === 'music_stopped') {
+                roundInfo.textContent = phase === 'music_playing'
+                    ? `🎵 Round ${roundNumber} in progress — music playing`
+                    : `🛑 Round ${roundNumber} — music stopped, waiting for players to sit`;
+                roundInfo.classList.add('visible');
+            } else {
+                roundInfo.classList.remove('visible');
+            }
+
+            // Start button disable
+            document.getElementById('startBtn').disabled = (phase !== 'waiting');
+
+            // Winner banner
+            const bannerEl = document.getElementById('winnerBanner');
+            if (winner) {
+                document.getElementById('winnerBannerName').textContent = winner;
+                bannerEl.classList.add('visible');
+            } else {
+                bannerEl.classList.remove('visible');
+            }
+
+            // Players
+            allPlayers = players;
+            renderPlayers();
+        }
+
+        function renderPlayers() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = query
+                ? allPlayers.filter(p => p.name.toLowerCase().includes(query))
+                : allPlayers;
+
+            const grid = document.getElementById('playerGrid');
+            grid.innerHTML = '';
+
+            // Sort: active first, then winner, then eliminated, disqualified
+            const order = { active: 0, winner: 1, eliminated: 2, disqualified: 3 };
+            const sorted = [...filtered].sort((a, b) => (order[a.status] ?? 9) - (order[b.status] ?? 9));
+
+            for (const p of sorted) {
+                const chip = document.createElement('div');
+                chip.className = `player-chip ${p.status}`;
+                chip.innerHTML = `
+        <span class="status-dot dot-${p.status}"></span>
+        <span class="chip-name" title="${p.name}">${p.name}</span>
+        <span class="chip-badge badge-${p.status}">${badgeText(p.status)}</span>
+      `;
+                grid.appendChild(chip);
+            }
+
+            if (sorted.length === 0) {
+                grid.innerHTML = '<p style="color:var(--muted);font-size:.85rem;padding:20px;">No players yet.</p>';
+            }
+        }
+
+        function badgeText(s) {
+            return { active: '✅ Active', disqualified: '❌ Disq', eliminated: '⏱ Out', winner: '🏆 Winner' }[s] || s;
+        }
+
+        // ── CONTROLS ──────────────────────────────────────────────────────────
+        function startGame() {
+            if (!confirm('Start the game? No new players can join after this.')) return;
+            socket.emit('admin:startGame');
+        }
+
+        function resetGame() {
+            if (!confirm('Reset the game? ALL data will be cleared.')) return;
+            socket.emit('admin:resetGame');
+        }
+    </script>
+</body>
+
+</html>
