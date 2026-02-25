@@ -1,665 +1,944 @@
 <!DOCTYPE html>
+<!-- YouTube IFrame API loaded at bottom -->
 <html lang="en">
+
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🎵 Musical Chairs Game</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>🎵 Musical Chairs Game</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;900&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
 
-    :root {
-      --bg: #0d0d1a;
-      --card: #161628;
-      --border: #2a2a50;
-      --accent: #7c3aed;
-      --accent2: #ec4899;
-      --gold: #f59e0b;
-      --green: #10b981;
-      --red: #ef4444;
-      --text: #f1f5f9;
-      --muted: #94a3b8;
-      --glow: rgba(124, 58, 237, 0.4);
-    }
+        :root {
+            --bg: #0d0d1a;
+            --card: #161628;
+            --border: #2a2a50;
+            --accent: #7c3aed;
+            --accent2: #ec4899;
+            --gold: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+            --text: #f1f5f9;
+            --muted: #94a3b8;
+            --glow: rgba(124, 58, 237, 0.4);
+        }
 
-    body {
-      font-family: 'Poppins', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
 
-    /* Animated background */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse at 20% 50%, rgba(124,58,237,.15) 0%, transparent 60%),
-                  radial-gradient(ellipse at 80% 20%, rgba(236,72,153,.1) 0%, transparent 60%);
-      pointer-events: none;
-    }
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(ellipse at 20% 50%, rgba(124, 58, 237, .15) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(236, 72, 153, .1) 0%, transparent 60%);
+            pointer-events: none;
+        }
 
-    /* ── SCREENS ── */
-    .screen {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      max-width: 520px;
-      padding: 24px;
-      text-align: center;
-      animation: fadeIn .4s ease;
-    }
-    .screen.active { display: flex; }
+        /* ── SCREENS ── */
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            max-width: 520px;
+            padding: 24px;
+            text-align: center;
+            animation: fadeIn .4s ease;
+        }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+        .screen.active {
+            display: flex;
+        }
 
-    /* ── CARD ── */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 40px 36px;
-      width: 100%;
-      box-shadow: 0 0 40px rgba(0,0,0,.5), 0 0 80px var(--glow);
-    }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
 
-    .logo {
-      font-size: 3rem;
-      margin-bottom: 8px;
-    }
-    .title {
-      font-size: 1.8rem;
-      font-weight: 900;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 6px;
-    }
-    .subtitle {
-      color: var(--muted);
-      font-size: .9rem;
-      margin-bottom: 32px;
-    }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    /* ── INPUTS ── */
-    input[type="text"] {
-      width: 100%;
-      padding: 14px 18px;
-      background: rgba(255,255,255,.05);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      color: var(--text);
-      font-family: 'Poppins', sans-serif;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color .2s, box-shadow .2s;
-      margin-bottom: 16px;
-    }
-    input[type="text"]:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 3px rgba(124,58,237,.2);
-    }
-    input[type="text"]::placeholder { color: var(--muted); }
+        /* ── CARD ── */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 40px 36px;
+            width: 100%;
+            box-shadow: 0 0 40px rgba(0, 0, 0, .5), 0 0 80px var(--glow);
+        }
 
-    /* ── BUTTONS ── */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 14px 32px;
-      border: none;
-      border-radius: 12px;
-      font-family: 'Poppins', sans-serif;
-      font-size: 1rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all .2s;
-      width: 100%;
-    }
-    .btn-primary {
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff;
-      box-shadow: 0 4px 20px rgba(124,58,237,.4);
-    }
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(124,58,237,.6);
-    }
-    .btn-primary:active { transform: translateY(0); }
-    .btn-primary:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-      transform: none;
-    }
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 8px;
+        }
 
-    /* ── ERROR ── */
-    .error-msg {
-      color: var(--red);
-      font-size: .85rem;
-      margin-top: -8px;
-      margin-bottom: 12px;
-      min-height: 20px;
-    }
+        .title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 6px;
+        }
 
-    /* ── PLAYER COUNT BADGE ── */
-    #playerCountBadge {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff;
-      padding: 8px 18px;
-      border-radius: 50px;
-      font-size: .85rem;
-      font-weight: 600;
-      box-shadow: 0 4px 16px rgba(124,58,237,.4);
-      display: none;
-      align-items: center;
-      gap: 6px;
-      z-index: 100;
-      transition: all .3s;
-    }
-    #playerCountBadge.visible { display: flex; }
-    #playerCountBadge .pulse-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #fff;
-      animation: pulseDot 1.2s ease-in-out infinite;
-    }
-    @keyframes pulseDot {
-      0%,100% { opacity: 1; transform: scale(1); }
-      50%      { opacity: .5; transform: scale(.7); }
-    }
+        .subtitle {
+            color: var(--muted);
+            font-size: .9rem;
+            margin-bottom: 32px;
+        }
 
-    /* ── LOBBY ── */
-    .lobby-icon { font-size: 4rem; margin-bottom: 16px; }
-    .lobby-name {
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--accent);
-      margin-bottom: 8px;
-    }
-    .lobby-status {
-      color: var(--muted);
-      font-size: .95rem;
-    }
-    .dots::after {
-      content: '';
-      display: inline-block;
-      animation: dots 1.4s steps(4, end) infinite;
-    }
-    @keyframes dots {
-      0%   { content: ''; }
-      25%  { content: '.'; }
-      50%  { content: '..'; }
-      75%  { content: '...'; }
-      100% { content: ''; }
-    }
+        /* ── INPUTS ── */
+        input[type="text"] {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: var(--text);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color .2s, box-shadow .2s;
+            margin-bottom: 16px;
+        }
 
-    /* ── GAME SCREEN ── */
-    #gameScreen .card { position: relative; }
+        input[type="text"]:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, .2);
+        }
 
-    .round-badge {
-      display: inline-block;
-      background: rgba(124,58,237,.2);
-      border: 1px solid var(--accent);
-      color: var(--accent);
-      border-radius: 50px;
-      padding: 4px 16px;
-      font-size: .8rem;
-      font-weight: 600;
-      margin-bottom: 20px;
-    }
+        input[type="text"]::placeholder {
+            color: var(--muted);
+        }
 
-    /* Music Visualizer */
-    .music-viz {
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 5px;
-      height: 80px;
-      margin: 16px 0 24px;
-    }
-    .bar {
-      width: 8px;
-      border-radius: 4px;
-      background: linear-gradient(to top, var(--accent), var(--accent2));
-      transition: height .15s ease;
-    }
-    .bar-1 { height: 20px; animation: bar1 .6s ease-in-out infinite; }
-    .bar-2 { height: 40px; animation: bar2 .5s ease-in-out infinite; }
-    .bar-3 { height: 60px; animation: bar3 .7s ease-in-out infinite; }
-    .bar-4 { height: 35px; animation: bar4 .55s ease-in-out infinite; }
-    .bar-5 { height: 55px; animation: bar5 .65s ease-in-out infinite; }
-    .bar-6 { height: 25px; animation: bar6 .5s ease-in-out infinite; }
-    .bar-7 { height: 45px; animation: bar7 .6s ease-in-out infinite; }
+        /* ── BUTTONS ── */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 14px 32px;
+            border: none;
+            border-radius: 12px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all .2s;
+            width: 100%;
+        }
 
-    @keyframes bar1 { 0%,100% { height:20px } 50% { height:60px } }
-    @keyframes bar2 { 0%,100% { height:40px } 50% { height:15px } }
-    @keyframes bar3 { 0%,100% { height:60px } 50% { height:30px } }
-    @keyframes bar4 { 0%,100% { height:35px } 50% { height:70px } }
-    @keyframes bar5 { 0%,100% { height:55px } 50% { height:20px } }
-    @keyframes bar6 { 0%,100% { height:25px } 50% { height:55px } }
-    @keyframes bar7 { 0%,100% { height:45px } 50% { height:10px } }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            box-shadow: 0 4px 20px rgba(124, 58, 237, .4);
+        }
 
-    .music-stopped .bar { animation: none !important; height: 6px !important; background: var(--red); }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(124, 58, 237, .6);
+        }
 
-    .music-label {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 28px;
-      min-height: 28px;
-    }
-    .music-label.playing { color: var(--green); }
-    .music-label.stopped { color: var(--red); font-size: 1.3rem; }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
 
-    /* SIT Button */
-    .sit-btn {
-      width: 160px;
-      height: 160px;
-      border-radius: 50%;
-      border: none;
-      background: linear-gradient(135deg, var(--accent), var(--accent2));
-      color: #fff;
-      font-family: 'Poppins', sans-serif;
-      font-size: 1.6rem;
-      font-weight: 900;
-      cursor: pointer;
-      box-shadow: 0 0 0 8px rgba(124,58,237,.2), 0 8px 40px rgba(124,58,237,.4);
-      transition: all .15s;
-      letter-spacing: 2px;
-      position: relative;
-      overflow: hidden;
-      margin: 0 auto;
-      display: block;
-    }
-    .sit-btn::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      border-radius: 50%;
-      background: rgba(255,255,255,0);
-      transition: background .15s;
-    }
-    .sit-btn:active::after {
-      background: rgba(255,255,255,.15);
-    }
-    .sit-btn:hover:not(:disabled) {
-      transform: scale(1.07);
-      box-shadow: 0 0 0 12px rgba(124,58,237,.25), 0 12px 50px rgba(124,58,237,.6);
-    }
-    .sit-btn:disabled {
-      background: linear-gradient(135deg, #444, #666);
-      box-shadow: none;
-      cursor: not-allowed;
-      transform: none;
-    }
-    .sit-btn.pressed {
-      background: linear-gradient(135deg, var(--green), #059669);
-      box-shadow: 0 0 0 12px rgba(16,185,129,.25), 0 12px 50px rgba(16,185,129,.5);
-    }
+        .btn-primary:disabled {
+            opacity: .5;
+            cursor: not-allowed;
+            transform: none;
+        }
 
-    .sit-hint {
-      color: var(--muted);
-      font-size: .8rem;
-      margin-top: 16px;
-    }
+        /* ── ERROR ── */
+        .error-msg {
+            color: var(--red);
+            font-size: .85rem;
+            margin-top: -8px;
+            margin-bottom: 12px;
+            min-height: 20px;
+        }
 
-    /* ── STATUS SCREENS ── */
-    .big-emoji { font-size: 5rem; margin-bottom: 20px; }
-    .status-title {
-      font-size: 1.8rem;
-      font-weight: 900;
-      margin-bottom: 12px;
-    }
-    .status-sub {
-      color: var(--muted);
-      font-size: .95rem;
-      line-height: 1.6;
-    }
+        /* ── PLAYER COUNT BADGE ── */
+        #playerCountBadge {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            padding: 8px 18px;
+            border-radius: 50px;
+            font-size: .85rem;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(124, 58, 237, .4);
+            display: none;
+            align-items: center;
+            gap: 6px;
+            z-index: 100;
+            transition: all .3s;
+        }
 
-    .text-red   { color: var(--red); }
-    .text-gold  { color: var(--gold); }
-    .text-green { color: var(--green); }
+        #playerCountBadge.visible {
+            display: flex;
+        }
 
-    /* ── CONFETTI ── */
-    .confetti-wrap { position:fixed; inset:0; pointer-events:none; z-index:99; }
-    .confetti-piece {
-      position: absolute;
-      width: 10px;
-      height: 14px;
-      border-radius: 2px;
-      animation: confettiFall linear forwards;
-    }
-    @keyframes confettiFall {
-      0%   { transform: translateY(-20px) rotate(0deg); opacity:1; }
-      100% { transform: translateY(100vh) rotate(720deg); opacity:0; }
-    }
+        #playerCountBadge .pulse-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #fff;
+            animation: pulseDot 1.2s ease-in-out infinite;
+        }
 
-    /* pulseRing on winner */
-    .winner-ring {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, var(--gold), #d97706);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 3rem;
-      margin: 0 auto 24px;
-      box-shadow: 0 0 0 0 rgba(245,158,11,.5);
-      animation: winnerPulse 1.5s ease-in-out infinite;
-    }
-    @keyframes winnerPulse {
-      0%   { box-shadow: 0 0 0 0 rgba(245,158,11,.5); }
-      70%  { box-shadow: 0 0 0 20px rgba(245,158,11,0); }
-      100% { box-shadow: 0 0 0 0 rgba(245,158,11,0); }
-    }
+        @keyframes pulseDot {
 
-    /* Starting countdown */
-    .start-flash {
-      font-size: 2.5rem;
-      font-weight: 900;
-      color: var(--accent);
-      animation: flash .5s ease-in-out infinite alternate;
-    }
-    @keyframes flash {
-      from { opacity: 1; } to { opacity: .3; }
-    }
-  </style>
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: .5;
+                transform: scale(.7);
+            }
+        }
+
+        /* ── LOBBY ── */
+        .lobby-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+        }
+
+        .lobby-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 8px;
+        }
+
+        .lobby-status {
+            color: var(--muted);
+            font-size: .95rem;
+        }
+
+        .dots::after {
+            content: '';
+            display: inline-block;
+            animation: dots 1.4s steps(4, end) infinite;
+        }
+
+        @keyframes dots {
+            0% {
+                content: '';
+            }
+
+            25% {
+                content: '.';
+            }
+
+            50% {
+                content: '..';
+            }
+
+            75% {
+                content: '...';
+            }
+
+            100% {
+                content: '';
+            }
+        }
+
+        /* ── GAME SCREEN ── */
+        #gameScreen .card {
+            position: relative;
+        }
+
+        .round-badge {
+            display: inline-block;
+            background: rgba(124, 58, 237, .2);
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            border-radius: 50px;
+            padding: 4px 16px;
+            font-size: .8rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        /* Music Visualizer */
+        .music-viz {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 5px;
+            height: 80px;
+            margin: 16px 0 24px;
+        }
+
+        .bar {
+            width: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to top, var(--accent), var(--accent2));
+            transition: height .15s ease;
+        }
+
+        .bar-1 {
+            height: 20px;
+            animation: bar1 .6s ease-in-out infinite;
+        }
+
+        .bar-2 {
+            height: 40px;
+            animation: bar2 .5s ease-in-out infinite;
+        }
+
+        .bar-3 {
+            height: 60px;
+            animation: bar3 .7s ease-in-out infinite;
+        }
+
+        .bar-4 {
+            height: 35px;
+            animation: bar4 .55s ease-in-out infinite;
+        }
+
+        .bar-5 {
+            height: 55px;
+            animation: bar5 .65s ease-in-out infinite;
+        }
+
+        .bar-6 {
+            height: 25px;
+            animation: bar6 .5s ease-in-out infinite;
+        }
+
+        .bar-7 {
+            height: 45px;
+            animation: bar7 .6s ease-in-out infinite;
+        }
+
+        @keyframes bar1 {
+
+            0%,
+            100% {
+                height: 20px
+            }
+
+            50% {
+                height: 60px
+            }
+        }
+
+        @keyframes bar2 {
+
+            0%,
+            100% {
+                height: 40px
+            }
+
+            50% {
+                height: 15px
+            }
+        }
+
+        @keyframes bar3 {
+
+            0%,
+            100% {
+                height: 60px
+            }
+
+            50% {
+                height: 30px
+            }
+        }
+
+        @keyframes bar4 {
+
+            0%,
+            100% {
+                height: 35px
+            }
+
+            50% {
+                height: 70px
+            }
+        }
+
+        @keyframes bar5 {
+
+            0%,
+            100% {
+                height: 55px
+            }
+
+            50% {
+                height: 20px
+            }
+        }
+
+        @keyframes bar6 {
+
+            0%,
+            100% {
+                height: 25px
+            }
+
+            50% {
+                height: 55px
+            }
+        }
+
+        @keyframes bar7 {
+
+            0%,
+            100% {
+                height: 45px
+            }
+
+            50% {
+                height: 10px
+            }
+        }
+
+        .music-stopped .bar {
+            animation: none !important;
+            height: 6px !important;
+            background: var(--red);
+        }
+
+        .music-label {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 28px;
+            min-height: 28px;
+        }
+
+        .music-label.playing {
+            color: var(--green);
+        }
+
+        .music-label.stopped {
+            color: var(--red);
+            font-size: 1.3rem;
+        }
+
+        /* SIT Button */
+        .sit-btn {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 900;
+            cursor: pointer;
+            box-shadow: 0 0 0 8px rgba(124, 58, 237, .2), 0 8px 40px rgba(124, 58, 237, .4);
+            transition: all .15s;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+            margin: 0 auto;
+            display: block;
+        }
+
+        .sit-btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0);
+            transition: background .15s;
+        }
+
+        .sit-btn:active::after {
+            background: rgba(255, 255, 255, .15);
+        }
+
+        .sit-btn:hover:not(:disabled) {
+            transform: scale(1.07);
+            box-shadow: 0 0 0 12px rgba(124, 58, 237, .25), 0 12px 50px rgba(124, 58, 237, .6);
+        }
+
+        .sit-btn:disabled {
+            background: linear-gradient(135deg, #444, #666);
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .sit-btn.pressed {
+            background: linear-gradient(135deg, var(--green), #059669);
+            box-shadow: 0 0 0 12px rgba(16, 185, 129, .25), 0 12px 50px rgba(16, 185, 129, .5);
+        }
+
+        .sit-hint {
+            color: var(--muted);
+            font-size: .8rem;
+            margin-top: 16px;
+        }
+
+        /* ── STATUS SCREENS ── */
+        .big-emoji {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .status-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            margin-bottom: 12px;
+        }
+
+        .status-sub {
+            color: var(--muted);
+            font-size: .95rem;
+            line-height: 1.6;
+        }
+
+        .text-red {
+            color: var(--red);
+        }
+
+        .text-gold {
+            color: var(--gold);
+        }
+
+        .text-green {
+            color: var(--green);
+        }
+
+        /* ── CONFETTI ── */
+        .confetti-wrap {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 99;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 14px;
+            border-radius: 2px;
+            animation: confettiFall linear forwards;
+        }
+
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-20px) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* pulseRing on winner */
+        .winner-ring {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gold), #d97706);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin: 0 auto 24px;
+            box-shadow: 0 0 0 0 rgba(245, 158, 11, .5);
+            animation: winnerPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes winnerPulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(245, 158, 11, .5);
+            }
+
+            70% {
+                box-shadow: 0 0 0 20px rgba(245, 158, 11, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(245, 158, 11, 0);
+            }
+        }
+
+        /* Starting countdown */
+        .start-flash {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--accent);
+            animation: flash .5s ease-in-out infinite alternate;
+        }
+
+        @keyframes flash {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: .3;
+            }
+        }
+    </style>
 </head>
+
 <body>
 
-<!-- Player Count Badge -->
-<div id="playerCountBadge">
-  <span class="pulse-dot"></span>
-  <span id="activeCountText">? players</span>
-</div>
-
-<!-- ── SCREEN: LOGIN ─────────────────────────────────── -->
-<div id="loginScreen" class="screen active">
-  <div class="card">
-    <div class="logo">🎵</div>
-    <h1 class="title">Musical Chairs</h1>
-    <p class="subtitle">Enter your full name to join the game</p>
-
-    <input type="text" id="nameInput" placeholder="Your Full Name" maxlength="60" autocomplete="off" />
-    <p class="error-msg" id="loginError"></p>
-    <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">🎮 Join Game</button>
-  </div>
-</div>
-
-<!-- ── SCREEN: LOBBY ─────────────────────────────────── -->
-<div id="lobbyScreen" class="screen">
-  <div class="card">
-    <div class="lobby-icon">🪑</div>
-    <div class="lobby-name" id="lobbyName"></div>
-    <p style="color:var(--green);font-weight:600;margin-bottom:16px;">✅ You're in!</p>
-    <p class="lobby-status">Waiting for the admin to start the game<span class="dots"></span></p>
-    <p style="color:var(--muted);font-size:.8rem;margin-top:24px;">Stay on this page. The game will begin shortly.</p>
-  </div>
-</div>
-
-<!-- ── SCREEN: STARTING ──────────────────────────────── -->
-<div id="startingScreen" class="screen">
-  <div class="card">
-    <p class="start-flash">🎵 Game is Starting!</p>
-    <p style="color:var(--muted);margin-top:16px;">Get ready…</p>
-  </div>
-</div>
-
-<!-- ── SCREEN: GAME ──────────────────────────────────── -->
-<div id="gameScreen" class="screen">
-  <div class="card">
-    <div class="round-badge" id="roundBadge">Round 1</div>
-
-    <div class="music-viz" id="musicViz">
-      <div class="bar bar-1"></div>
-      <div class="bar bar-2"></div>
-      <div class="bar bar-3"></div>
-      <div class="bar bar-4"></div>
-      <div class="bar bar-5"></div>
-      <div class="bar bar-6"></div>
-      <div class="bar bar-7"></div>
+    <!-- Player Count Badge -->
+    <div id="playerCountBadge">
+        <span class="pulse-dot"></span>
+        <span id="activeCountText">? players</span>
     </div>
 
-    <p class="music-label playing" id="musicLabel">🎶 Music is playing…</p>
+    <!-- ── SCREEN: LOGIN ─────────────────────────────────── -->
+    <div id="loginScreen" class="screen active">
+        <div class="card">
+            <div class="logo">🎵</div>
+            <h1 class="title">Musical Chairs</h1>
+            <p class="subtitle">Enter your full name to join the game</p>
 
-    <button class="sit-btn" id="sitBtn" onclick="pressSit()">SIT</button>
-    <p class="sit-hint" id="sitHint">Wait for the music to stop!</p>
-  </div>
-</div>
+            <input type="text" id="nameInput" placeholder="Your Full Name" maxlength="60" autocomplete="off" />
+            <p class="error-msg" id="loginError"></p>
+            <button class="btn btn-primary" id="loginBtn" onclick="doLogin()">🎮 Join Game</button>
+        </div>
+    </div>
 
-<!-- ── SCREEN: DISQUALIFIED ──────────────────────────── -->
-<div id="disqScreen" class="screen">
-  <div class="card">
-    <div class="big-emoji">🚫</div>
-    <h2 class="status-title text-red">Disqualified!</h2>
-    <p class="status-sub">You pressed <strong>SIT</strong> while the music was still playing.<br/>Better luck next time!</p>
-  </div>
-</div>
+    <!-- ── SCREEN: LOBBY ─────────────────────────────────── -->
+    <div id="lobbyScreen" class="screen">
+        <div class="card">
+            <div class="lobby-icon">🪑</div>
+            <div class="lobby-name" id="lobbyName"></div>
+            <p style="color:var(--green);font-weight:600;margin-bottom:16px;">✅ You're in!</p>
+            <p class="lobby-status">Waiting for the admin to start the game<span class="dots"></span></p>
+            <p style="color:var(--muted);font-size:.8rem;margin-top:24px;">Stay on this page. The game will begin
+                shortly.</p>
+        </div>
+    </div>
 
-<!-- ── SCREEN: ELIMINATED (LATE) ────────────────────── -->
-<div id="elimScreen" class="screen">
-  <div class="card">
-    <div class="big-emoji">⏱️</div>
-    <h2 class="status-title" style="color:var(--accent2)">Eliminated!</h2>
-    <p class="status-sub" id="elimRound">You were too slow in Round 1.<br/>Thanks for playing!</p>
-  </div>
-</div>
+    <!-- ── SCREEN: STARTING ──────────────────────────────── -->
+    <div id="startingScreen" class="screen">
+        <div class="card">
+            <p class="start-flash">🎵 Game is Starting!</p>
+            <p style="color:var(--muted);margin-top:16px;">Get ready…</p>
+        </div>
+    </div>
 
-<!-- ── SCREEN: SIT ACKNOWLEDGED ─────────────────────── -->
-<div id="sitOkScreen" class="screen">
-  <div class="card">
-    <div class="big-emoji">✅</div>
-    <h2 class="status-title text-green">Sit Recorded!</h2>
-    <p class="status-sub">Your seat has been recorded.<br/>Waiting for results of this round…</p>
-  </div>
-</div>
+    <!-- ── SCREEN: GAME ──────────────────────────────────── -->
+    <div id="gameScreen" class="screen">
+        <div class="card">
+            <div class="round-badge" id="roundBadge">Round 1</div>
 
-<!-- ── SCREEN: WINNER ────────────────────────────────── -->
-<div id="winnerScreen" class="screen">
-  <div class="confetti-wrap" id="confettiWrap"></div>
-  <div class="card">
-    <div class="winner-ring">🏆</div>
-    <h2 class="status-title text-gold">🎉 You Won!</h2>
-    <p class="status-sub" id="winnerName"></p>
-    <p style="color:var(--muted);font-size:.85rem;margin-top:16px;">Congratulations — you are the last one standing!</p>
-  </div>
-</div>
+            <div class="music-viz" id="musicViz">
+                <div class="bar bar-1"></div>
+                <div class="bar bar-2"></div>
+                <div class="bar bar-3"></div>
+                <div class="bar bar-4"></div>
+                <div class="bar bar-5"></div>
+                <div class="bar bar-6"></div>
+                <div class="bar bar-7"></div>
+            </div>
 
-<!-- ── SCREEN: GAME ENDED (SPECTATOR) ───────────────── -->
-<div id="endedScreen" class="screen">
-  <div class="card">
-    <div class="big-emoji">🎊</div>
-    <h2 class="status-title">Game Over!</h2>
-    <p class="status-sub">The winner is:<br/><strong style="color:var(--gold);font-size:1.3rem;" id="endedWinnerName"></strong></p>
-  </div>
-</div>
+            <p class="music-label playing" id="musicLabel">🎶 Music is playing…</p>
 
-<!-- Socket.io -->
-<script src="/socket.io/socket.io.js"></script>
-<script>
-  const socket = io();
-  let myName = '';
-  let myStatus = 'active'; // active | disqualified | eliminated | winner
-  let musicPlaying = false;
-  let sitPressed = false;
+            <button class="sit-btn" id="sitBtn" onclick="pressSit()">SIT</button>
+            <p class="sit-hint" id="sitHint">Wait for the music to stop!</p>
+        </div>
+    </div>
 
-  // ── SCREEN MANAGEMENT ──────────────────────────────────────────────────
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
+    <!-- ── SCREEN: DISQUALIFIED ──────────────────────────── -->
+    <div id="disqScreen" class="screen">
+        <div class="card">
+            <div class="big-emoji">🚫</div>
+            <h2 class="status-title text-red">Disqualified!</h2>
+            <p class="status-sub">You pressed <strong>SIT</strong> while the music was still playing.<br />Better luck
+                next time!</p>
+        </div>
+    </div>
 
-  // ── PLAYER COUNT BADGE ─────────────────────────────────────────────────
-  function updateBadge(count) {
-    const badge = document.getElementById('playerCountBadge');
-    document.getElementById('activeCountText').textContent = `${count} active`;
-    badge.classList.add('visible');
-  }
+    <!-- ── SCREEN: ELIMINATED (LATE) ────────────────────── -->
+    <div id="elimScreen" class="screen">
+        <div class="card">
+            <div class="big-emoji">⏱️</div>
+            <h2 class="status-title" style="color:var(--accent2)">You're Eliminated!</h2>
+            <p class="status-sub" id="elimRound">You were too slow to sit.<br />Better luck next time!</p>
+            <div
+                style="margin-top:24px;padding:14px 20px;background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.3);border-radius:12px;">
+                <p style="color:var(--accent2);font-weight:600;font-size:.9rem;">🪑 Someone sat faster than you this
+                    round.</p>
+                <p style="color:var(--muted);font-size:.82rem;margin-top:6px;">You have been removed from the game.</p>
+            </div>
+        </div>
+    </div>
 
-  // ── LOGIN ──────────────────────────────────────────────────────────────
-  document.getElementById('nameInput').addEventListener('keydown', e => {
-    if (e.key === 'Enter') doLogin();
-  });
+    <!-- ── SCREEN: SIT ACKNOWLEDGED ─────────────────────── -->
+    <div id="sitOkScreen" class="screen">
+        <div class="card">
+            <div class="big-emoji">✅</div>
+            <h2 class="status-title text-green">Sit Recorded!</h2>
+            <p class="status-sub">Your seat has been recorded.<br />Waiting for results of this round…</p>
+        </div>
+    </div>
 
-  function doLogin() {
-    const name = document.getElementById('nameInput').value.trim();
-    const errEl = document.getElementById('loginError');
-    const btn = document.getElementById('loginBtn');
-    if (!name || name.length < 2) {
-      errEl.textContent = 'Please enter your full name (at least 2 characters).';
-      return;
-    }
+    <!-- ── SCREEN: WINNER ────────────────────────────────── -->
+    <div id="winnerScreen" class="screen">
+        <div class="confetti-wrap" id="confettiWrap"></div>
+        <div class="card">
+            <div class="winner-ring">🏆</div>
+            <h2 class="status-title text-gold">🎉 You Won!</h2>
+            <p class="status-sub" id="winnerName"></p>
+            <p style="color:var(--muted);font-size:.85rem;margin-top:16px;">Congratulations — you are the last one
+                standing!</p>
+        </div>
+    </div>
 
-    btn.disabled = true;
-    btn.textContent = 'Joining…';
-    errEl.textContent = '';
+    <!-- ── SCREEN: GAME ENDED (SPECTATOR) ───────────────── -->
+    <div id="endedScreen" class="screen">
+        <div class="card">
+            <div class="big-emoji">🎊</div>
+            <h2 class="status-title">Game Over!</h2>
+            <p class="status-sub">The winner is:<br /><strong style="color:var(--gold);font-size:1.3rem;"
+                    id="endedWinnerName"></strong></p>
+        </div>
+    </div>
 
-    socket.emit('player:login', { name }, (res) => {
-      if (res && res.success) {
-        myName = res.name;
-        document.getElementById('lobbyName').textContent = `Hello, ${myName}! 👋`;
-        showScreen('lobbyScreen');
-      } else {
-        errEl.textContent = (res && res.message) || 'Could not join. Try again.';
-        btn.disabled = false;
-        btn.textContent = '🎮 Join Game';
-      }
-    });
-  }
+    <!-- Hidden YouTube Player -->
+    <div id="ytPlayer" style="position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;pointer-events:none;"></div>
 
-  // ── GAME EVENTS ────────────────────────────────────────────────────────
+    <!-- Socket.io -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // ── YOUTUBE PLAYER ──────────────────────────────────────────────────
+        const YT_VIDEO_ID = 'UQ6LGrr8iEg';
+        let ytPlayer = null;
+        let ytReady = false;
 
-  socket.on('game:playerCount', ({ count }) => {
-    updateBadge(count);
-  });
+        window.onYouTubeIframeAPIReady = function () {
+            ytPlayer = new YT.Player('ytPlayer', {
+                videoId: YT_VIDEO_ID,
+                playerVars: {
+                    autoplay: 0,
+                    controls: 0,
+                    loop: 1,
+                    playlist: YT_VIDEO_ID,
+                    fs: 0,
+                    rel: 0,
+                    modestbranding: 1,
+                },
+                events: {
+                    onReady: () => { ytReady = true; },
+                },
+            });
+        };
 
-  socket.on('game:starting', () => {
-    showScreen('startingScreen');
-  });
+        function playMusic() {
+            if (ytReady && ytPlayer) {
+                ytPlayer.seekTo(0);
+                ytPlayer.playVideo();
+            }
+        }
 
-  socket.on('game:musicStart', ({ round, activePlayers }) => {
-    if (myStatus !== 'active') return;
-    musicPlaying = true;
-    sitPressed = false;
+        function stopMusic() {
+            if (ytReady && ytPlayer) {
+                ytPlayer.pauseVideo();
+            }
+        }
+    </script>
 
-    document.getElementById('roundBadge').textContent = `Round ${round}`;
-    const viz = document.getElementById('musicViz');
-    viz.classList.remove('music-stopped');
-    const label = document.getElementById('musicLabel');
-    label.textContent = '🎶 Music is playing…';
-    label.className = 'music-label playing';
+    <!-- YouTube IFrame API -->
+    <script src="https://www.youtube.com/iframe_api"></script>
+    <script>
+        const socket = io();
+        let myName = '';
+        let myStatus = 'active'; // active | disqualified | eliminated | winner
+        let musicPlaying = false;
+        let sitPressed = false;
 
-    const sitBtn = document.getElementById('sitBtn');
-    sitBtn.disabled = false;
-    sitBtn.classList.remove('pressed');
-    document.getElementById('sitHint').textContent = 'Wait for the music to stop!';
+        // ── SCREEN MANAGEMENT ──────────────────────────────────────────────────
+        function showScreen(id) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
 
-    updateBadge(activePlayers);
-    showScreen('gameScreen');
-  });
+        // ── PLAYER COUNT BADGE ─────────────────────────────────────────────────
+        function updateBadge(count) {
+            const badge = document.getElementById('playerCountBadge');
+            document.getElementById('activeCountText').textContent = `${count} active`;
+            badge.classList.add('visible');
+        }
 
-  socket.on('game:musicStop', ({ round, activePlayers }) => {
-    if (myStatus !== 'active') return;
-    musicPlaying = false;
+        // ── LOGIN ──────────────────────────────────────────────────────────────
+        document.getElementById('nameInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') doLogin();
+        });
 
-    const viz = document.getElementById('musicViz');
-    viz.classList.add('music-stopped');
-    const label = document.getElementById('musicLabel');
-    label.textContent = '🛑 MUSIC STOPPED — SIT NOW!';
-    label.className = 'music-label stopped';
+        function doLogin() {
+            const name = document.getElementById('nameInput').value.trim();
+            const errEl = document.getElementById('loginError');
+            const btn = document.getElementById('loginBtn');
+            if (!name || name.length < 2) { errEl.textContent = 'Please enter your full name (at least 2 characters).'; return; }
+            btn.disabled = true; btn.textContent = 'Joining…'; errEl.textContent = ''; socket.emit('player:login', { name },
+                (res) => {
+                    if (res && res.success) {
+                        myName = res.name;
+                        document.getElementById('lobbyName').textContent = `Hello, ${myName}! 👋`;
+                        showScreen('lobbyScreen');
+                    } else {
+                        errEl.textContent = (res && res.message) || 'Could not join. Try again.';
+                        btn.disabled = false;
+                        btn.textContent = '🎮 Join Game';
+                    }
+                });
+        }
 
-    document.getElementById('sitHint').textContent = 'Press SIT as fast as you can!';
-    updateBadge(activePlayers);
-  });
+        // ── GAME EVENTS ────────────────────────────────────────────────────────
 
-  socket.on('game:sitAcknowledged', () => {
-    if (myStatus !== 'active') return;
-    sitPressed = true;
-    const sitBtn = document.getElementById('sitBtn');
-    sitBtn.classList.add('pressed');
-    sitBtn.textContent = '✓';
-    document.getElementById('sitHint').textContent = 'Seat recorded! Waiting for round results…';
-    setTimeout(() => showScreen('sitOkScreen'), 600);
-  });
+        socket.on('game:playerCount', ({ count }) => {
+            updateBadge(count);
+        });
 
-  socket.on('game:disqualified', () => {
-    myStatus = 'disqualified';
-    showScreen('disqScreen');
-  });
+        socket.on('game:starting', () => {
+            showScreen('startingScreen');
+        });
 
-  socket.on('game:eliminated', ({ round }) => {
-    myStatus = 'eliminated';
-    document.getElementById('elimRound').textContent =
-      `You were too slow in Round ${round}.\nThanks for playing!`;
-    showScreen('elimScreen');
-  });
+        socket.on('game:musicStart', ({ round, activePlayers }) => {
+            if (myStatus !== 'active') return;
+            musicPlaying = true;
+            sitPressed = false;
+            playMusic(); // ▶ Start YouTube music
 
-  socket.on('game:winner', ({ name }) => {
-    myStatus = 'winner';
-    document.getElementById('winnerName').textContent = `${name}, you are the champion! 🏆`;
-    showScreen('winnerScreen');
-    launchConfetti();
-  });
+            document.getElementById('roundBadge').textContent = `Round ${round}`;
+            const viz = document.getElementById('musicViz');
+            viz.classList.remove('music-stopped');
+            const label = document.getElementById('musicLabel');
+            label.textContent = '🎶 Music is playing…';
+            label.className = 'music-label playing';
 
-  socket.on('game:ended', ({ winner }) => {
-    if (myStatus === 'winner') return; // already on winner screen
-    document.getElementById('endedWinnerName').textContent = winner || 'Unknown';
-    showScreen('endedScreen');
-  });
+            const sitBtn = document.getElementById('sitBtn');
+            sitBtn.disabled = false;
+            sitBtn.classList.remove('pressed');
+            document.getElementById('sitHint').textContent = 'Wait for the music to stop!';
 
-  socket.on('game:reset', () => {
-    myName = '';
-    myStatus = 'active';
-    musicPlaying = false;
-    sitPressed = false;
-    document.getElementById('nameInput').value = '';
-    document.getElementById('loginBtn').disabled = false;
-    document.getElementById('loginBtn').textContent = '🎮 Join Game';
-    document.getElementById('loginError').textContent = '';
-    document.getElementById('playerCountBadge').classList.remove('visible');
-    showScreen('loginScreen');
-  });
+            updateBadge(activePlayers);
+            showScreen('gameScreen');
+        });
 
-  // ── SIT BUTTON ─────────────────────────────────────────────────────────
-  function pressSit() {
-    if (sitPressed) return;
-    socket.emit('player:sit');
-  }
+        socket.on('game:musicStop', ({ round, activePlayers }) => {
+            if (myStatus !== 'active') return;
+            musicPlaying = false;
+            stopMusic(); // ⏸ Pause YouTube music
 
-  // ── CONFETTI ───────────────────────────────────────────────────────────
-  function launchConfetti() {
-    const wrap = document.getElementById('confettiWrap');
-    const colors = ['#7c3aed','#ec4899','#f59e0b','#10b981','#3b82f6','#f97316'];
-    for (let i = 0; i < 120; i++) {
-      const el = document.createElement('div');
-      el.className = 'confetti-piece';
-      el.style.cssText = `
-        left: ${Math.random() * 100}vw;
-        top: -20px;
-        background: ${colors[Math.floor(Math.random() * colors.length)]};
-        transform: rotate(${Math.random() * 360}deg);
-        animation-duration: ${1.5 + Math.random() * 2.5}s;
-        animation-delay: ${Math.random() * 1.5}s;
-      `;
-      wrap.appendChild(el);
-      setTimeout(() => el.remove(), 5000);
-    }
-  }
-</script>
+            const viz = document.getElementById('musicViz');
+            viz.classList.add('music-stopped');
+            const label = document.getElementById('musicLabel');
+            label.textContent = '🛑 MUSIC STOPPED — SIT NOW!';
+            label.className = 'music-label stopped';
+
+            document.getElementById('sitHint').textContent = 'Press SIT as fast as you can!';
+            updateBadge(activePlayers);
+        });
+
+        socket.on('game:sitAcknowledged', () => {
+            if (myStatus !== 'active') return;
+            sitPressed = true;
+            const sitBtn = document.getElementById('sitBtn');
+            sitBtn.classList.add('pressed');
+            sitBtn.textContent = '✓';
+            document.getElementById('sitHint').textContent = 'Seat recorded! Waiting for round results…';
+            setTimeout(() => showScreen('sitOkScreen'), 600);
+        });
+
+        socket.on('game:disqualified', () => {
+            myStatus = 'disqualified';
+            stopMusic();
+            showScreen('disqScreen');
+        });
+
+        socket.on('game:eliminated', ({ round }) => {
+            myStatus = 'eliminated';
+            stopMusic();
+            document.getElementById('elimRound').innerHTML =
+                `⏱️ You were too slow in <strong>Round ${round}</strong>.<br />Thanks for playing!`;
+            showScreen('elimScreen');
+        });
+
+        socket.on('game:winner', ({ name }) => {
+            myStatus = 'winner';
+            stopMusic();
+            document.getElementById('winnerName').textContent = `${name}, you are the champion! 🏆`;
+            showScreen('winnerScreen');
+            launchConfetti();
+        });
+
+        socket.on('game:ended', ({ winner }) => {
+            if (myStatus === 'winner') return; // already on winner screen
+            document.getElementById('endedWinnerName').textContent = winner || 'Unknown';
+            showScreen('endedScreen');
+        });
+
+        socket.on('game:reset', () => {
+            myName = '';
+            myStatus = 'active';
+            musicPlaying = false;
+            sitPressed = false;
+            document.getElementById('nameInput').value = '';
+            document.getElementById('loginBtn').disabled = false;
+            document.getElementById('loginBtn').textContent = '🎮 Join Game';
+            document.getElementById('loginError').textContent = '';
+            document.getElementById('playerCountBadge').classList.remove('visible');
+            showScreen('loginScreen');
+        });
+
+        // ── SIT BUTTON ─────────────────────────────────────────────────────────
+        function pressSit() {
+            if (sitPressed) return;
+            socket.emit('player:sit');
+        }
+
+        // ── CONFETTI ───────────────────────────────────────────────────────────
+        function launchConfetti() {
+            const wrap = document.getElementById('confettiWrap');
+            const colors = ['#7c3aed', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#f97316'];
+            for (let i = 0; i < 120; i++) {
+                const el = document.createElement('div'); el.className = 'confetti-piece';
+                el.style.cssText = ` left: ${Math.random() * 100}vw; top: -20px; background: ${colors[Math.floor(Math.random()
+                    * colors.length)]}; transform: rotate(${Math.random() * 360}deg); animation-duration: ${1.5 + Math.random()
+                    * 2.5}s; animation-delay: ${Math.random() * 1.5}s; `; wrap.appendChild(el); setTimeout(() => el.remove(),
+                        5000);
+            }
+        }
+    </script>
 </body>
+
 </html>
